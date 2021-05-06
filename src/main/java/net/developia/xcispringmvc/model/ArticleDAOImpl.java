@@ -12,6 +12,7 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -73,6 +74,7 @@ public class ArticleDAOImpl implements ArticleDAO {
 		return recordCount;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<ArticleDTO> getArticleList(long startNum, long endNum) throws SQLException {
 		StringBuffer sql = new StringBuffer();
@@ -83,27 +85,27 @@ public class ArticleDAOImpl implements ArticleDAO {
 		sql.append("     ) B ");
 		sql.append("where rnum between ? and ? ");
 		
-		List<ArticleDTO> list = new ArrayList<>();
-		try(Connection conn = dataSource.getConnection();
-			PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+
+		Object[] args = {startNum, endNum};
+		// 제네릭에 레코드 하나하나마다 어떤 타입으로 리턴시킬지 적어줌
+		RowMapper<ArticleDTO> rowMapper = new RowMapper() {
 			
-			ps.setLong(1, startNum);
-			ps.setLong(2, endNum);
-			
-			try(ResultSet rs = ps.executeQuery()) {
-				while(rs.next()) {
-					ArticleDTO articleDTO = new ArticleDTO();
-					articleDTO.setNo(rs.getLong("no"));
-					articleDTO.setTitle(rs.getString("title"));
-					articleDTO.setName(rs.getString("name"));
-					articleDTO.setRegdate(rs.getDate("regdate"));
-					articleDTO.setReadcount(rs.getInt("readcount"));
-					list.add(articleDTO);
-				}
+			@Override
+			//rs는 현재 위치에 대한 레코드 하나를 가져온다, rowNum은 그 레코드의 번호(오라클의 rowNum은 아니다)
+			public ArticleDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+				ArticleDTO articleDTO = new ArticleDTO();
+				articleDTO.setNo(rs.getLong("no"));
+				articleDTO.setTitle(rs.getString("title"));
+				articleDTO.setName(rs.getString("name"));
+				articleDTO.setRegdate(rs.getDate("regdate"));
+				articleDTO.setReadcount(rs.getInt("readcount"));
+				return articleDTO;
 			}
 			
-		}
-		return list;
+		};
+		
+		return jdbcTemplate.query(sql.toString(), args, rowMapper);
+		
 	}
 
 	@Override
@@ -125,25 +127,43 @@ public class ArticleDAOImpl implements ArticleDAO {
 		sql.append("select no, title, name, regdate, readcount, content from t_board ");
 		sql.append("where no = ? ");
 		
-		ArticleDTO articleDTO = new ArticleDTO();
-		
-		try(Connection conn = dataSource.getConnection();
-			PreparedStatement ps = conn.prepareStatement(sql.toString())) {
-			ps.setLong(1, no);
-			try(ResultSet rs = ps.executeQuery()) {
-				while(rs.next()) {
-					articleDTO = new ArticleDTO();
-					articleDTO.setNo(rs.getLong("no"));
-					articleDTO.setTitle(rs.getString("title"));
-					articleDTO.setName(rs.getString("name"));
-					articleDTO.setRegdate(rs.getDate("regdate"));
-					articleDTO.setReadcount(rs.getInt("readcount"));
-					articleDTO.setContent(rs.getString("content"));
-				}
+		// 제네릭에 레코드 하나하나마다 어떤 타입으로 리턴시킬지 적어줌
+		@SuppressWarnings("unchecked")
+		RowMapper<ArticleDTO> rowMapper = new RowMapper() {
+
+			@Override
+			//rs는 현재 위치에 대한 레코드 하나를 가져온다, rowNum은 그 레코드의 번호(오라클의 rowNum은 아니다)
+			public ArticleDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+				ArticleDTO articleDTO = new ArticleDTO();
+				articleDTO = new ArticleDTO();
+				articleDTO.setNo(rs.getLong("no"));
+				articleDTO.setTitle(rs.getString("title"));
+				articleDTO.setName(rs.getString("name"));
+				articleDTO.setRegdate(rs.getDate("regdate"));
+				articleDTO.setReadcount(rs.getInt("readcount"));
+				articleDTO.setContent(rs.getString("content"));
+				return articleDTO;
 			}
 			
-		}
-		return articleDTO;
+		};
+
+		return jdbcTemplate.queryForObject(sql.toString(), rowMapper, new Object[] {no});
+		
+		/*
+		 * ArticleDTO articleDTO = new ArticleDTO();
+		 * 
+		 * try(Connection conn = dataSource.getConnection(); PreparedStatement ps =
+		 * conn.prepareStatement(sql.toString())) { ps.setLong(1, no); try(ResultSet rs
+		 * = ps.executeQuery()) { while(rs.next()) { articleDTO = new ArticleDTO();
+		 * articleDTO.setNo(rs.getLong("no"));
+		 * articleDTO.setTitle(rs.getString("title"));
+		 * articleDTO.setName(rs.getString("name"));
+		 * articleDTO.setRegdate(rs.getDate("regdate"));
+		 * articleDTO.setReadcount(rs.getInt("readcount"));
+		 * articleDTO.setContent(rs.getString("content")); } }
+		 * 
+		 * } return articleDTO;
+		 */
 	}
 
 	@Override
@@ -178,10 +198,7 @@ public class ArticleDAOImpl implements ArticleDAO {
 		sql.append("DELETE FROM t_board ");
 		sql.append("WHERE no=? AND password=?");
 		
-		Object[] args = {
-				no,
-				password
-		};
+		Object[] args = {no, password};
 		return jdbcTemplate.update(sql.toString(), args);
 	}
 }
