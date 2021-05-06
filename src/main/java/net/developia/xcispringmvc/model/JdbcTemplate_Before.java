@@ -12,23 +12,23 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
-public class JdbcTemplate {
+public class JdbcTemplate_Before {
 
 
 	/** 커넥션풀링 싱글톤으로 만들기 **********************************************/
 	private DataSource dataSource;
 
-	private static final JdbcTemplate jdbcTemplate = new JdbcTemplate();
+	private static final JdbcTemplate_Before jdbcTemplate = new JdbcTemplate_Before();
 
-	public static JdbcTemplate getInstance() {
+	public static JdbcTemplate_Before getInstance() {
 		return jdbcTemplate;
 	}
 
-	private JdbcTemplate() {
+	private JdbcTemplate_Before() {
 		try {
 			Context ctx = new InitialContext();
 
-			dataSource = (DataSource) ctx.lookup("java:comp/env/jdbc/xcispring01");
+			dataSource = (DataSource) ctx.lookup("java:comp/env/jdbc/xcispringmvc");
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("JdbcTemplate 생성자에서 에러");

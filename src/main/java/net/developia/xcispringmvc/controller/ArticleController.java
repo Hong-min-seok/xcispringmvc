@@ -2,14 +2,9 @@ package net.developia.xcispringmvc.controller;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import net.developia.xcispringmvc.model.ArticleDTO;
@@ -41,7 +36,7 @@ public class ArticleController {
 	}
 
 	@RequestMapping(value = "/detail")
-	public ModelAndView detail(@RequestParam Long no) {
+	public ModelAndView detail(@RequestParam(required = true) Long no) {
 
 		try {
 			ArticleDTO articleDTO = articleService.getDetail(no);
@@ -76,7 +71,7 @@ public class ArticleController {
 	}
 
 	@RequestMapping(value = "/update")
-	public ModelAndView update(@RequestParam Long no) {
+	public ModelAndView update(@RequestParam(required = true) Long no) {
 
 		try {
 			ArticleDTO articleDTO = articleService.getDetail(no, false);
@@ -110,14 +105,14 @@ public class ArticleController {
 	}
 	
 	@RequestMapping(value = "/delete")
-	public ModelAndView delete(@RequestParam Long no) {
+	public ModelAndView delete(@RequestParam(required = true) Long no) {
 		return new ModelAndView("delete", "no", no);
 	}
 	
 	@RequestMapping(value = "/deleteAction")
-	public ModelAndView deleteAction(HttpServletRequest request) {
-		Long no = Long.parseLong(request.getParameter("no"));
-		String password = DigestUtils.sha512Hex(request.getParameter("password"));
+	public ModelAndView deleteAction(@ModelAttribute ArticleDTO articleDTO) {
+		Long no = articleDTO.getNo();
+		String password = articleDTO.getPassword();
 		ModelAndView mav = new ModelAndView();
 		
 		try {

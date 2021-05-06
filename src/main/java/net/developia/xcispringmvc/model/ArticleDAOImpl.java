@@ -8,19 +8,25 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public class ArticleDAOImpl implements ArticleDAO {
 
-
+	//*******************************************************************************
+	@Autowired
 	private DataSource dataSource;
-	private static final JdbcTemplate jdbcTemplate = JdbcTemplate.getInstance();
+	//private static final JdbcTemplate jdbcTemplate = JdbcTemplate.getInstance();
+	//아래처럼 바뀜 *****************************************************************
+	
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
 
+	/*
 	private ArticleDAOImpl() {
 		try {
 			Context ctx = new InitialContext();
@@ -29,6 +35,7 @@ public class ArticleDAOImpl implements ArticleDAO {
 			e.printStackTrace();
 		}
 	}
+	*/
 
 	
 	@Override
