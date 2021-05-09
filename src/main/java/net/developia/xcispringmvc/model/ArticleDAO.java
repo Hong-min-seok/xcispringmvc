@@ -17,7 +17,7 @@ public interface ArticleDAO {
 	// update가 잘 수행되었는지 받기 위해 int 반환
 	int updateArticle(ArticleDTO articleDTO) throws SQLException;
 
-	int deleteArticle(Long no, String password) throws SQLException;
+	int deleteArticle(ArticleDTO articleDTO) throws SQLException;
 
 	long getTotalRecord() throws SQLException;
 }

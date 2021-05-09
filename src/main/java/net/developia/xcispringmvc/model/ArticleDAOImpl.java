@@ -193,12 +193,12 @@ public class ArticleDAOImpl implements ArticleDAO {
 	}
 
 	@Override
-	public int deleteArticle(Long no, String password) throws SQLException {
+	public int deleteArticle(ArticleDTO articleDTO) throws SQLException {
 		StringBuffer sql = new StringBuffer();
 		sql.append("DELETE FROM t_board ");
 		sql.append("WHERE no=? AND password=?");
 		
-		Object[] args = {no, password};
+		Object[] args = {articleDTO.getNo(), articleDTO.getPassword()};
 		return jdbcTemplate.update(sql.toString(), args);
 	}
 }

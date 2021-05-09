@@ -18,7 +18,7 @@ public interface ArticleService {
 
 	void updateArticle(ArticleDTO articleDTO) throws Exception;
 
-	void deleteArticle(Long no, String password) throws Exception;
+	void deleteArticle(ArticleDTO articleDTO) throws Exception;
 	
 	PagingDTO getPagingInfo(int page) throws Exception;
 }

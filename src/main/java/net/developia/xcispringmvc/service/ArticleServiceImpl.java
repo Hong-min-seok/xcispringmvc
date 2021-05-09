@@ -67,8 +67,8 @@ public class ArticleServiceImpl implements ArticleService {
 	}
 
 	@Override
-	public void deleteArticle(Long no, String password) throws Exception {
-		if(articleDAO.deleteArticle(no, password) == 0) {
+	public void deleteArticle(ArticleDTO articleDTO) throws Exception {
+		if(articleDAO.deleteArticle(articleDTO) == 0) {
 			throw new RuntimeException("글이 없거나 비밀번호가 틀립니다.");
 		}
 	}

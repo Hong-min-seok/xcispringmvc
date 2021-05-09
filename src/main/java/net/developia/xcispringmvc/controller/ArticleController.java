@@ -63,7 +63,7 @@ public class ArticleController {
 			mav.setViewName("redirect:list");
 		} catch (Exception e) {
 			e.printStackTrace();
-			mav.setViewName("/WEB-INF/views/result.jsp");
+			mav.setViewName("result");
 			mav.addObject("msg", "글 등록에 실패하였습니다.");
 			mav.addObject("url", "javascript:history.back();");
 		}
@@ -111,12 +111,11 @@ public class ArticleController {
 	
 	@RequestMapping(value = "/deleteAction")
 	public ModelAndView deleteAction(@ModelAttribute ArticleDTO articleDTO) {
-		Long no = articleDTO.getNo();
-		String password = articleDTO.getPassword();
+
 		ModelAndView mav = new ModelAndView();
 		
 		try {
-			articleService.deleteArticle(no, password);
+			articleService.deleteArticle(articleDTO);
 			mav.setViewName("result");
 			mav.addObject("msg", "게시물이 삭제되었습니다.");
 			mav.addObject("url", "list");
